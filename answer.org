@@ -9,15 +9,19 @@ NOTE: There are certainly many mistake.
 * pthread
 ** Explaination
 ** Value
-*** Array    
+*** Array
     
-    | Specificities               | Thread | 0x7f4cb0ae1640 | 0x7f4cafadf640 | 0x7f4cb02e0640 | 0x7f4caf2de640 | 0x7f4cb0ae2740 |
-    |-----------------------------+--------+----------------+----------------+----------------+----------------+----------------|
-    | *global* int                | a      | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c |
-    | *global* __thread int       | b      | 0x7f4cb0ae1638 | 0x7f4cafadf638 | 0x7f4cb02e0638 | 0x7f4caf2de638 | 0x7f4cb0ae2738 |
-    | *local* static int          | c      | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 |              - |
-    | *local* int                 | d      | 0x7f4cb0ae0e44 | 0x7f4cafadee44 | 0x7f4cb02dfe44 | 0x7f4caf2dde44 |              - |
-    | *local* static __thread int | e      | 0x7f4cb0ae163c | 0x7f4cafadf63c | 0x7f4cb02e063c | 0x7f4caf2de63c |              - |
+    | *Specificities*             | *Variable* |     *Thread 0* |     *Thread 1* |     *Thread 2* |     *Thread 3* | *Main*         |
+    |-----------------------------+------------+----------------+----------------+----------------+----------------+----------------|
+    | -                           | -          | 0x7f4cb0ae1640 | 0x7f4cafadf640 | 0x7f4cb02e0640 | 0x7f4caf2de640 | 0x7f4cb0ae2740 |
+    |-----------------------------+------------+----------------+----------------+----------------+----------------+----------------|
+    | *global* int                | a          | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c |
+    | *global* __thread int       | b          | 0x7f4cb0ae1638 | 0x7f4cafadf638 | 0x7f4cb02e0638 | 0x7f4caf2de638 | 0x7f4cb0ae2738 |
+    | *local* static int          | c          | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | -              |
+    | *local* int                 | d          | 0x7f4cb0ae0e44 | 0x7f4cafadee44 | 0x7f4cb02dfe44 | 0x7f4caf2dde44 | -              |
+    | *local* static __thread int | e          | 0x7f4cb0ae163c | 0x7f4cafadf63c | 0x7f4cb02e063c | 0x7f4caf2de63c | -              |
+    |-----------------------------+------------+----------------+----------------+----------------+----------------+----------------|
+
 
 *** Explaination
 **** a
