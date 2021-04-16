@@ -1,0 +1,52 @@
+#+TITLE: DM of APP
+#+AUTHOR: Nicolas Bouton
+#+DATE: April 2021
+
+NOTE: There are certainly many mistake.
+
+* MPI
+** Explaination
+* pthread
+** Explaination
+** Value
+*** Array    
+    
+    | Specificities               | Thread | 0x7f4cb0ae1640 | 0x7f4cafadf640 | 0x7f4cb02e0640 | 0x7f4caf2de640 | 0x7f4cb0ae2740 |
+    |-----------------------------+--------+----------------+----------------+----------------+----------------+----------------|
+    | *global* int                | a      | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c |
+    | *global* __thread int       | b      | 0x7f4cb0ae1638 | 0x7f4cafadf638 | 0x7f4cb02e0638 | 0x7f4caf2de638 | 0x7f4cb0ae2738 |
+    | *local* static int          | c      | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 |              - |
+    | *local* int                 | d      | 0x7f4cb0ae0e44 | 0x7f4cafadee44 | 0x7f4cb02dfe44 | 0x7f4caf2dde44 |              - |
+    | *local* static __thread int | e      | 0x7f4cb0ae163c | 0x7f4cafadf63c | 0x7f4cb02e063c | 0x7f4caf2de63c |              - |
+
+*** Explaination
+**** a
+
+     For the variable *a*, she is declare *global* without attribute, then all
+     thread which are created will use the same address of the variable (they
+     will don't create another). Typically, the main thread will create the
+     variable and each thread created by the main thread will be used this
+     variable.
+
+     Thus we have for the variable *a* the same value for all thread, also for
+     the main thread (the processus).
+
+**** b
+
+     For the variable *b*, she is declare *global* but with the attribute
+     *__thread* which indicate to create another variable for each thread.
+
+     Therefore, we have a different address for each thread, also for the main
+     thread (the processus).
+
+**** c
+
+     For the variable *c*, she is declare *local* in the function which create
+     all thread, with the attribute *static* which indicate that is a shared
+     variable for all thread.
+
+     Therefore, we have the same address for each thread, also for the main
+     thread (the processus).
+
+**** d
+**** e
