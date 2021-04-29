@@ -1,10 +1,6 @@
-#include <mpi.h>
 #include <stdio.h>
 #include <assert.h>
-
-int rank;
-int size;
-
+#include <mpi.h>
 
 /*
   Paralléliser avec MPI le calcul de la somme suivante
@@ -13,10 +9,11 @@ int size;
 */
 #define max_iter_exo1 1000
 
-void exo1(){
+void exo1(const int rank, const int size)
+{
+  //
   int i; 
-  int somme = 0;
-
+  int sum = 0;
 
   // Variable to help for MPI
   int ibeg = 0;
@@ -46,38 +43,52 @@ void exo1(){
 
   // Reduce in local
   for(i = ibeg; i < iend; i++){
-    somme += i; 
+    sum += i; 
   }
 
   // Exchange mpi
   // Here I use reduce function because we want to do a reduction on the original code
-  MPI_Reduce(&somme, &res, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+  MPI_Reduce(&sum, &res, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
   if (rank == 0)
     {
       /*Vérification du résultat*/
       fprintf(stderr, "Somme %d attendu %d\n", res, ((max_iter_exo1 - 1) * max_iter_exo1) / 2);
+
       /*Vérification du résultat de la somme*/
       assert(res == ((max_iter_exo1 - 1) * max_iter_exo1) / 2);
+
       /*Vérification du nombre d'iération réalisées par chaque processus MPI*/
-      assert(i == max_iter_exo1/size);
+      assert(i == (max_iter_exo1 / size));
     }
 }
 
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
+  // MPI variable
+  int rank = 0;
+  int size = 0;
+  
+  // Init MPI
   MPI_Init(&argc,&argv);
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
-  if(rank == 0)
-    fprintf(stderr,"MPI %d\n",size);
+  {
+    // Get MPI value
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    MPI_Comm_size(MPI_COMM_WORLD,&size);
 
-  /* Vérification du nombre de processus MPI*/
-  assert(max_iter_exo1 % size == 0);
+    // Print bench
+    if(rank == 0)
+      fprintf(stderr,"Bench MPI: %d process\n",size);
 
-  exo1();
-  
-  
+    /* Vérification du nombre de processus MPI*/
+    assert(max_iter_exo1 % size == 0);
+
+    // Run exo
+    exo1(rank, size);
+  }
   MPI_Finalize();
+
+  //
   return 0; 
 }

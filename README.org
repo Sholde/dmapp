@@ -6,6 +6,20 @@ NOTE: There are certainly many mistake.
 
 * MPI
 ** Explaination
+
+   I commented a lot on my code. But I let explain my reasoning.
+
+   I decompose the array in each MPI process where each process have at least
+   *SIZE_OF_ARRAY / NB_OF_MPI_PROCESS* and the remaining is added to the
+   *REMAIN_VALUE* first processes. It is the optimal way to decompose an array.
+
+   Each process will do its *local reduce* and then call *MPI_Reduce* to reduce
+   all *local reduce* of MPI processes.
+
+   Therefore, the main process (Process 0) will have the result. I don't do an
+   Allreduce because we don't need this. We just need one process to print the
+   result. So I decide to use *MPI_Reduce* instead of *MPI_Allreduce*.
+   
 * pthread
 ** Explaination
 
