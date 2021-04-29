@@ -1,9 +1,7 @@
-#include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
-
-// Define here the number of threads because I need it
-#define NB_THREADS 4
+#include <pthread.h>
 
 // Thread structure to compute partial sum
 typedef struct sum_s
@@ -29,9 +27,10 @@ void *worker(void *arg)
   int somme = 0;
   
   // Partial sum
-  for(i = sum->ibeg; i < sum->iend; i++){
-    somme += i; 
-  }
+  for(i = sum->ibeg; i < sum->iend; i++)
+    {
+      somme += i; 
+    }
 
   // Updating the final sum with our partial sum
   pthread_mutex_lock(sum->mut);
@@ -45,7 +44,10 @@ void *worker(void *arg)
 Convertir le code du fichier openmp.c exo1 en code utilisant uniquement les fonctions pthread
 */
 #define max_iter_exo1 1000
-void exo1(){
+void exo1(const int nthreads)
+{
+  // Define the number of thread
+  int NB_THREADS = nthreads;
 
   // Dafault variable for sum
   int i = 0;
@@ -61,30 +63,31 @@ void exo1(){
   int remain = max_iter_exo1 % NB_THREADS;
 
   // Create all threads
-  for(i = 0; i < NB_THREADS; i++){
-    // Init struct
+  for(i = 0; i < NB_THREADS; i++)
     {
-      sum[i].res = &res;
+      // Init struct
+      {
+        sum[i].res = &res;
 
-      // Note that is the same explanation that mpi (because we do the same thing)
-      // We share the work the way to have just one more iteration if there are
-      // remain value to compute.
-      if (i < remain)
-        {
-          // Case we need to do nb_ite + 1 opertions
-          nb_ite++;
-          sum[i].ibeg = nb_ite * i;
-          sum[i].iend = nb_ite * (i + 1);
-        }
-      else
-        {
-          // Case we need to do nb_ite operations
-          // It is not very hard, we just need to add the number of times we make
-          // nb_ite + 1 operation (this is on the left of plus), then we add the
-          // number of times we make nb_ite until our rank.
-          sum[i].ibeg = (nb_ite + 1) * remain + nb_ite * (i - remain);
-          sum[i].iend = (nb_ite + 1) * remain + nb_ite * (i + 1 - remain);
-        }
+        // Note that is the same explanation that mpi (because we do the same thing)
+        // We share the work the way to have just one more iteration if there are
+        // remain value to compute.
+        if (i < remain)
+          {
+            // Case we need to do nb_ite + 1 opertions
+            nb_ite++;
+            sum[i].ibeg = nb_ite * i;
+            sum[i].iend = nb_ite * (i + 1);
+          }
+        else
+          {
+            // Case we need to do nb_ite operations
+            // It is not very hard, we just need to add the number of times we make
+            // nb_ite + 1 operation (this is on the left of plus), then we add the
+            // number of times we make nb_ite until our rank.
+            sum[i].ibeg = (nb_ite + 1) * remain + nb_ite * (i - remain);
+            sum[i].iend = (nb_ite + 1) * remain + nb_ite * (i + 1 - remain);
+          }
 
       sum[i].mut = &mut;
     }
@@ -94,9 +97,10 @@ void exo1(){
   }
 
   // Waiting all threads
-  for(i = 0; i < NB_THREADS; i++){
-    pthread_join(tid[i], NULL);
-  }
+  for(i = 0; i < NB_THREADS; i++)
+    {
+      pthread_join(tid[i], NULL);
+    }
 
   // Destroy the mutex
   pthread_mutex_destroy(&mut);
@@ -128,27 +132,44 @@ void* func(void* arg){
  fprintf(stderr,"\tThread %p e %p\n",(void*)pthread_self(),&e);
 }
 
-void exo2(){
-  pthread_t tid[NB_THREADS];
+void exo2(const int nthreads)
+{
+  // Get the number of threads
+  int NB_THREADS = nthreads;
+
+  // Allocate pthread structure
+  pthread_t *tid = malloc(sizeof(pthread_t) * NB_THREADS);
+  
   int i;
 
-  for(i = 0; i < NB_THREADS; i++){
-    pthread_create(&(tid[i]),NULL,func,NULL);
-  }
+  for(i = 0; i < NB_THREADS; i++)
+    {
+      pthread_create(&(tid[i]),NULL,func,NULL);
+    }
     
-  for(i = 0; i < NB_THREADS; i++){
-    pthread_join(tid[i], NULL);
-  }
+  for(i = 0; i < NB_THREADS; i++)
+    {
+      pthread_join(tid[i], NULL);
+    }
   
   fprintf(stderr,"Thread %p a %p\n",(void*)pthread_self(),&a);
   fprintf(stderr,"Thread %p b %p\n",(void*)pthread_self(),&b);
-    
+
+  // Release pthread structure
+  free(tid);
 }
-int main(int argc, char** argv){
-  fprintf(stderr,"PThread\n");
+
+int main(int argc, char** argv)
+{
+  if (argc != 2)
+    return fprintf(stderr,"Usage: %s [NB_THREADS]\n", argv[0]), 1;
   
-  exo1();
-  exo2();
+  fprintf(stderr,"Bench name: PThread\n");
+
+  int nthreads = atoi(argv[1]);
+  
+  exo1(nthreads);
+  exo2(nthreads);
   
   return 0; 
 }

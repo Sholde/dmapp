@@ -22,9 +22,8 @@ NOTE: There are certainly many mistake.
     | local of thread | static __thread | e          | 0x7f4cb0ae163c | 0x7f4cafadf63c | 0x7f4cb02e063c | 0x7f4caf2de63c | -              |
     |-----------------+-----------------+------------+----------------+----------------+----------------+----------------+----------------|
 
-
 *** Explaination
-**** a
+**** Variable a
 
      For the variable *a*, it is declare *global* without attribute, then all
      thread which are created will use the same address of the variable (they
@@ -35,7 +34,7 @@ NOTE: There are certainly many mistake.
      Thus we have for the variable *a* the same value for all thread, also for
      the main thread (the processus).
 
-**** b
+**** Variable b
 
      For the variable *b*, it is declare *global* but with the attribute
      *__thread* which indicate to create another variable for each thread.
@@ -43,7 +42,7 @@ NOTE: There are certainly many mistake.
      Therefore, we have a different address for each thread, also for the main
      thread (the processus).
 
-**** c
+**** Variable c
 
      For the variable *c*, it is declare *locally in the thread function*
      with the attribute *static* which indicate that variable is initialized
@@ -52,7 +51,7 @@ NOTE: There are certainly many mistake.
      Therefore, all thread use the same variable and we have the same address
      for each thread.
 
-**** d
+**** Variable d
 
      For the variable *d*, it is declare *locally* in the thread function withou
      attribue.
@@ -60,7 +59,7 @@ NOTE: There are certainly many mistake.
      Therefore it is local and all thread have different vairable. So all
      address differ.
      
-**** e
+**** Variable e
 
      For the variable *e*, it is declare *locally in the thread function* but 
      with *two attribute*, *static* and *__thread*. The first indicate that the
