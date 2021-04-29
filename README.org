@@ -8,6 +8,20 @@ NOTE: There are certainly many mistake.
 ** Explaination
 * pthread
 ** Explaination
+
+   I think my comment are enough but I will explain my reasonning.
+
+   I decompose the array to reduce in *NB_THREADS* part and for the remain I
+   code the optimal way. I added one element for the first *value of remain*
+   theads.
+
+   Then all thread do the reduce of the share array but with their part and
+   after they will enter in the mutex, one at a time, for update the share
+   reduce varaible with their local recude variable. (addition)
+
+   Then the main have the result because is it that create the shared reduce
+   variable.
+   
 ** Value
 *** Array
     
