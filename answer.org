@@ -11,22 +11,22 @@ NOTE: There are certainly many mistake.
 ** Value
 *** Array
     
-    | *Specificities*             | *Variable* |     *Thread 0* |     *Thread 1* |     *Thread 2* |     *Thread 3* | *Main*         |
-    |-----------------------------+------------+----------------+----------------+----------------+----------------+----------------|
-    | -                           | -          | 0x7f4cb0ae1640 | 0x7f4cafadf640 | 0x7f4cb02e0640 | 0x7f4caf2de640 | 0x7f4cb0ae2740 |
-    |-----------------------------+------------+----------------+----------------+----------------+----------------+----------------|
-    | *global* int                | a          | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c |
-    | *global* __thread int       | b          | 0x7f4cb0ae1638 | 0x7f4cafadf638 | 0x7f4cb02e0638 | 0x7f4caf2de638 | 0x7f4cb0ae2738 |
-    | *local* static int          | c          | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | -              |
-    | *local* int                 | d          | 0x7f4cb0ae0e44 | 0x7f4cafadee44 | 0x7f4cb02dfe44 | 0x7f4caf2dde44 | -              |
-    | *local* static __thread int | e          | 0x7f4cb0ae163c | 0x7f4cafadf63c | 0x7f4cb02e063c | 0x7f4caf2de63c | -              |
-    |-----------------------------+------------+----------------+----------------+----------------+----------------+----------------|
+    | *Reach*         | *Attribute*     | *Variable* |     *Thread 0* |     *Thread 1* |     *Thread 2* |     *Thread 3* | *Main*         |
+    |-----------------+-----------------+------------+----------------+----------------+----------------+----------------+----------------|
+    | -               |                 | -          | 0x7f4cb0ae1640 | 0x7f4cafadf640 | 0x7f4cb02e0640 | 0x7f4caf2de640 | 0x7f4cb0ae2740 |
+    |-----------------+-----------------+------------+----------------+----------------+----------------+----------------+----------------|
+    | global          | -               | a          | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c | 0x55c21e39108c |
+    | global          | __thread        | b          | 0x7f4cb0ae1638 | 0x7f4cafadf638 | 0x7f4cb02e0638 | 0x7f4caf2de638 | 0x7f4cb0ae2738 |
+    | local of thread | static          | c          | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | 0x55c21e391090 | -              |
+    | local of thread | -               | d          | 0x7f4cb0ae0e44 | 0x7f4cafadee44 | 0x7f4cb02dfe44 | 0x7f4caf2dde44 | -              |
+    | local of thread | static __thread | e          | 0x7f4cb0ae163c | 0x7f4cafadf63c | 0x7f4cb02e063c | 0x7f4caf2de63c | -              |
+    |-----------------+-----------------+------------+----------------+----------------+----------------+----------------+----------------|
 
 
 *** Explaination
 **** a
 
-     For the variable *a*, she is declare *global* without attribute, then all
+     For the variable *a*, it is declare *global* without attribute, then all
      thread which are created will use the same address of the variable (they
      will don't create another). Typically, the main thread will create the
      variable and each thread created by the main thread will be used this
@@ -37,7 +37,7 @@ NOTE: There are certainly many mistake.
 
 **** b
 
-     For the variable *b*, she is declare *global* but with the attribute
+     For the variable *b*, it is declare *global* but with the attribute
      *__thread* which indicate to create another variable for each thread.
 
      Therefore, we have a different address for each thread, also for the main
@@ -45,12 +45,27 @@ NOTE: There are certainly many mistake.
 
 **** c
 
-     For the variable *c*, she is declare *local* in the function which create
-     all thread, with the attribute *static* which indicate that is a shared
-     variable for all thread.
+     For the variable *c*, it is declare *locally in the thread function*
+     with the attribute *static* which indicate that variable is initialized
+     only once by the program.
 
-     Therefore, we have the same address for each thread, also for the main
-     thread (the processus).
+     Therefore, all thread use the same variable and we have the same address
+     for each thread.
 
 **** d
+
+     For the variable *d*, it is declare *locally* in the thread function withou
+     attribue.
+
+     Therefore it is local and all thread have different vairable. So all
+     address differ.
+     
 **** e
+
+     For the variable *e*, it is declare *locally in the thread function* but 
+     with *two attribute*, *static* and *__thread*. The first indicate that the
+     variable is initialized only once and the second indicate that all thread
+     have a different variable. So each thread will initialazed once our
+     variable.
+
+     Therefore, as each thread have their own variable, all address differ.
