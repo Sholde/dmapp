@@ -109,8 +109,8 @@ void exo1(const int nthreads)
   somme = *(sum[0].res);
   
   /*Vérification du résultat*/
-  fprintf(stderr,"Somme %d attendu %d\n",somme, ((max_iter_exo1-1)*max_iter_exo1)/2);
-  assert(somme == ((max_iter_exo1-1)*max_iter_exo1)/2);
+  fprintf(stderr, "Somme %d attendu %d\n", somme, ((max_iter_exo1 - 1) * max_iter_exo1) / 2);
+  assert(somme == ((max_iter_exo1 - 1) * max_iter_exo1) / 2);
 }
 
 /*
@@ -120,16 +120,18 @@ void exo1(const int nthreads)
 int a;
 __thread int b;
 
-void* func(void* arg){
+void *func(void *arg)
+{
   static int c;
   int d;
   static __thread int e;
- 
- fprintf(stderr,"\tThread %p a %p\n",(void*)pthread_self(),&a);
- fprintf(stderr,"\tThread %p b %p\n",(void*)pthread_self(),&b);
- fprintf(stderr,"\tThread %p c %p\n",(void*)pthread_self(),&c);
- fprintf(stderr,"\tThread %p d %p\n",(void*)pthread_self(),&d);
- fprintf(stderr,"\tThread %p e %p\n",(void*)pthread_self(),&e);
+
+  //
+  fprintf(stderr, "\tThread %p a %p\n", (void *)pthread_self(), &a);
+  fprintf(stderr, "\tThread %p b %p\n", (void *)pthread_self(), &b);
+  fprintf(stderr, "\tThread %p c %p\n", (void *)pthread_self(), &c);
+  fprintf(stderr, "\tThread %p d %p\n", (void *)pthread_self(), &d);
+  fprintf(stderr, "\tThread %p e %p\n", (void *)pthread_self(), &e);
 }
 
 void exo2(const int nthreads)
@@ -139,21 +141,25 @@ void exo2(const int nthreads)
 
   // Allocate pthread structure
   pthread_t *tid = malloc(sizeof(pthread_t) * NB_THREADS);
-  
+
+  //
   int i;
 
+  // Create thread
   for(i = 0; i < NB_THREADS; i++)
     {
-      pthread_create(&(tid[i]),NULL,func,NULL);
+      pthread_create(&(tid[i]), NULL, func, NULL);
     }
-    
+
+  // Waiting thread
   for(i = 0; i < NB_THREADS; i++)
     {
       pthread_join(tid[i], NULL);
     }
-  
-  fprintf(stderr,"Thread %p a %p\n",(void*)pthread_self(),&a);
-  fprintf(stderr,"Thread %p b %p\n",(void*)pthread_self(),&b);
+
+  // Print global value
+  fprintf(stderr, "Thread %p a %p\n", (void *)pthread_self(), &a);
+  fprintf(stderr, "Thread %p b %p\n", (void *)pthread_self(), &b);
 
   // Release pthread structure
   free(tid);
@@ -161,15 +167,20 @@ void exo2(const int nthreads)
 
 int main(int argc, char** argv)
 {
+  // Check argument
   if (argc != 2)
-    return fprintf(stderr,"Usage: %s [NB_THREADS]\n", argv[0]), 1;
-  
-  fprintf(stderr,"Bench name: PThread\n");
+    return fprintf(stderr, "Usage: %s [NB_THREADS]\n", argv[0]), 1;
 
+  //
+  fprintf(stderr, "Bench name: PThread\n");
+
+  // Get the number of threads
   int nthreads = atoi(argv[1]);
-  
+
+  // Run exo
   exo1(nthreads);
   exo2(nthreads);
-  
+
+  //
   return 0; 
 }
