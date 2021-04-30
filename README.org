@@ -187,3 +187,12 @@ NOTE: There are certainly many mistake.
      shared the same variable created by the main.
 
      Therefore we have the same adress for all thread and main.
+* Reference
+
+  Github repository: https://github.com/Sholde/dmapp
+  
+  If you are intersted, I developped a tool for another module, named TOP, where
+  we had to debug a MPI application and optimize it. So I develop a *MPI
+  Profiler*:
+
+  Link: https://github.com/Sholde/mprof
