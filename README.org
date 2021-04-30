@@ -68,7 +68,8 @@ NOTE: There are certainly many mistake.
      *__thread* which indicate to create another variable for each thread.
 
      Therefore, we have a different address for each thread, also for the main
-     thread (the processus).
+     thread (the processus) because it is a processus and not a thread create by
+     *pthread*.
 
 **** Variable c
 
@@ -96,3 +97,93 @@ NOTE: There are certainly many mistake.
      variable.
 
      Therefore, as each thread have their own variable, all address differ.
+* OpenMP
+** Explanation
+
+   For openmp, David Dureau said us that is a good way to put by default all
+   variable private with ~default(none)~.
+
+   On the code we just need to have the *for* in omp parallel, so I put all
+   *omp* attribute in the same line.
+
+   To decompose the array we need to have a private index for all thread, so *i*
+   is private. And we want to make a reduction, so we make a reduction on
+   variable *sum*.
+
+** Value
+   
+   In *omp parallel* clause, we don't specify the default "vision", therefore
+   all varaible is shared by default and I suppose that information is knowed
+   for the following explanation.
+
+*** Array
+
+    | *Reach* | *Attribute*           | *Variable* |     *Thread 0* |     *Thread 1* |         *Main* |
+    |---------+-----------------------+------------+----------------+----------------+----------------|
+    | global  | -                     | a          | 0x5577fa58906c | 0x5577fa58906c | 0x5577fa58906c |
+    | global  | #pragma threadprivate | b          | 0x7f9225b78d7c | 0x7f9225b7763c | 0x7f9225b78d7c |
+    | local   | static                | c          | 0x5577fa589070 | 0x5577fa589070 | 0x5577fa589070 |
+    | local   | -                     | d          | 0x7ffca463cb28 | 0x7ffca463cb28 | 0x7ffca463cb28 |
+    | local   | #pragma omp private   | e          | 0x7ffca463cad4 | 0x7f9225b76d84 | 0x7ffca463cb30 |
+    | local   | #pragma omp shared    | f          | 0x7ffca463cb2c | 0x7ffca463cb2c | 0x7ffca463cb2c |
+
+*** Explanation
+**** Variable a
+
+     The variable b is declare *global* in the code and have not attribute.
+     
+     Therefore, all thread will have the same variable and the same address.
+
+     And the main have the same address of *thread 0* because *main* is the
+     *thread 0*.
+
+**** Variable b
+
+     For the variable b, the line was not correct because *threadprivate* is a
+     directive of omp and you don't specify omp after the pragma. So I added it.
+
+     The attibute *threadprivate* specify that all thread will create their own
+     variable.
+
+     Therefore, all thread will have the same variable and the same address.
+
+     And the main have the same address of *thread 0* because *main* is the
+     *thread 0*.
+
+**** Variable c
+
+     For the variable c, it is declare locally in the function and with attribute
+     *static*, so tha variable will be initialazed once in the program and each
+     thread will have the same value because on *omp parallel* clause we don't
+     change his attribute.
+
+     Therefore, all thread will have the same variable and the same address.
+
+     And the main have the same address of *thread 0* because *main* is the
+     *thread 0*.
+
+**** Variable d
+
+     For the variable d, it is declare locally in the function, without omp
+     attribute in *omp parallel*.
+
+     Therefore the variable is shared and all *thread* will have the same
+     variable. (the same address)
+
+     And the main have the same address of *thread 0* because *main* is the
+     *thread 0*.
+
+**** Variable e
+
+     For the variable e, it is declare locally in the function but on *omp
+     parallel* clause we specify that is *private* and each thread will create
+     their own variable. Even the *thread 0* will create another variable. It is
+     for thsi that the address differ between *main* and *thread 0*.
+
+**** Variable f
+
+     For the variable f, it is declare locally in the function but on *omp
+     parallel* clause we specify that is *shared*. Therefore all thread will
+     shared the same variable created by the main.
+
+     Therefore we have the same adress for all thread and main.

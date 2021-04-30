@@ -34,7 +34,7 @@ void exo1(void)
 
 int a;
 int b;
-#pragma threadprivate(b)
+#pragma omp threadprivate(b)
 
 void exo2(void)
 {
